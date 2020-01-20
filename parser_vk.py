@@ -65,47 +65,6 @@ def attach_parse(nesting):
     return attach
 
 
-def parse_posts(posts):
-    """
-    Parses the resulting list of posts into components
-    :param posts: list of posts
-    :return: post ids, texts, attachments in the form of codes or links,
-    quantity of attachments, likes, reposts and comments
-    """
-    ids = []
-    text = []
-    attachments = []
-    num_attach = []
-    likes = []
-    reposts = []
-    comments = []
-    for post in posts:
-        ids.append(post['id'])
-        if post['text'] == '':
-            if 'copy_history' in post:
-                text.append(str(post['copy_history'][0]['text']
-                                ).replace('\n', ''))
-            else:
-                text.append(None)
-        else:
-            text.append(str(post['text']).replace('\n', ''))
-        if 'attachments' in post:
-            num_attach.append(len(post['attachments']))
-            attachments.append(attach_parse(post))
-        elif 'copy_history' in post:
-            if 'attachments' in post['copy_history'][0]:
-                num_attach.append(len(post['copy_history'][0]['attachments']))
-                attachments.append(attach_parse(post['copy_history'][0]))
-        likes.append(post['likes']['count'])
-        reposts.append(post['reposts']['count'])
-        comments.append(post['comments']['count'])
-    keys = ('ids', 'text', 'num of attachments', 'list of attachments',
-            'num of likes', 'num of reposts', 'number of comments')
-    values = (ids, text, num_attach, attachments, likes, reposts, comments)
-    parsed_posts = {key: value for key, value in zip(keys, values)}
-    return parsed_posts
-
-
 def ids_parse(posts):
     """
     Parses the resulting list of posts on ids
