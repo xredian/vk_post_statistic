@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkbox</title>
+</head>
+<body>
+    <H2>VK statistics APP</H2>
+    {% if message %}
+        <H3>{{ message }}</H3>
+    {% endif %}
+
+    <form action="" method="post">
+        <p>
+        <fieldset>
+            <label>
+                <input type="checkbox" name="post_ids" value="yes">
+            </label>Post ID<br>
+            <label>
+                <input type="checkbox" name="text" value="yes">
+            </label>Text<br>
+            <label>
+                <input type="checkbox" name="attachments" value="yes">
+            </label>Attachments<br>
+            <label>
+                <input type="checkbox" name="num_attachments" value="yes">
+            </label>Number of attachments<br>
+            <label>
+                <input type="checkbox" name="num_likes" value="yes">
+            </label>Number of likes<br>
+            <label>
+                <input type="checkbox" name="num_reposts" value="yes">
+            </label>Number of reposts<br>
+            <label>
+                <input type="checkbox" name="num_comments" value="yes">
+             </label>Number of comments<br>
+        </fieldset>
+        <p>
+            <input type="submit" value="Download">
+        </p>
+    </form>
+</body>
+</html>

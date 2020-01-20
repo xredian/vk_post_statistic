@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<title>User ID and date</title>
+</head>
+<body>
+    <H2>VK statistics APP</H2>
+    {% if message %}
+        <H3>{{ message }}</H3>
+    {% endif %}
+
+    <form action="" method="post">
+        <p>
+	        <label for="user_id">User/community id
+				<input type="text" name="user_id" maxlength="15">
+			</label>
+		</p>
+		<p>
+	        <label for="date">Date
+	            <input type="date" name="date">
+			</label>
+		</p>
+		<p>
+		    (starting from which data is taken into account)
+		</p>
+		<p>
+			<input type="submit">
+	    </p>
+	</form>
+</body>
+</html>
