@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<title>Graphic</title>
+</head>
+<body>
+    <H2>VK statistics APP</H2>
+    <form action="" method="post">
+        <p>
+            <label for="period">Period
+                <select name="period">
+                    <option value="year">Year</option>
+                    <option value="month">Month</option>
+                    <option value="day">Day</option>
+                    <option value="hour">Hour</option>
+                </select>
+            </label>
+        </p>
+        <p>
+            <label for="value">Value
+                 <select name="value">
+                    <option value="likes">Likes</option>
+                    <option value="reposts">Reposts</option>
+                    <option value="comments">Comments</option>
+                    <option value="posts">Posts</option>
+                </select>
+            </label>
+        </p>
+        <p>
+            <input type="submit" value="Submit">
+        </p>
+
+        {% if message %}
+        <h3>{{ message }}</h3>
+        <p><img src="{{ url_for('static', filename=plot) }}" alt="graphic"></p>
+        <p>
+            <input type="submit" value="Download" name="Download">
+         </p>
+
+        {% endif %}
+
+    </form>
+</body>
+</html>

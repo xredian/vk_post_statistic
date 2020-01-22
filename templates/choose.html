@@ -2,42 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Checkbox</title>
+	<title>Choose</title>
 </head>
 <body>
     <H2>VK statistics APP</H2>
-    {% if message %}
-        <H3>{{ message }}</H3>
-    {% endif %}
-
+    <H3>Download statistics in csv file or display it on graphs?</H3>
     <form action="" method="post">
         <p>
-        <fieldset>
-            <label>
-                <input type="checkbox" name="post_ids" value="yes">
-            </label>Post ID<br>
-            <label>
-                <input type="checkbox" name="text" value="yes">
-            </label>Text<br>
-            <label>
-                <input type="checkbox" name="attachments" value="yes">
-            </label>Attachments<br>
-            <label>
-                <input type="checkbox" name="num_attachments" value="yes">
-            </label>Number of attachments<br>
-            <label>
-                <input type="checkbox" name="num_likes" value="yes">
-            </label>Number of likes<br>
-            <label>
-                <input type="checkbox" name="num_reposts" value="yes">
-            </label>Number of reposts<br>
-            <label>
-                <input type="checkbox" name="num_comments" value="yes">
-             </label>Number of comments<br>
-        </fieldset>
-        <p>
-            <input type="submit" value="Download">
-        </p>
+			<input type="submit" name="Download" value="Download">
+			<input type="submit" name="Graphic" value="Graphic">
+	    </p>
     </form>
 </body>
 </html>
