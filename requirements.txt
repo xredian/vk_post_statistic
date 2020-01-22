@@ -1,0 +1,8 @@
+datetime
+python-dotenv
+flask
+gevent
+matplotlib
+numpy
+requests
+seaborn
