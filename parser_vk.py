@@ -2,70 +2,57 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os
 import requests
+import time
 
 load_dotenv()
 token = os.getenv('ACCESS_TOKEN')
 api_v = os.getenv('API_VERSION')
 
 
-def get_posts(user_id, date):
+def get_data(user_id, offset=0):
     """
     Returns a list of user or community posts
     :param user_id: user or community id
-    :param date: date starting from which data is taken into account
+    :param offset: offset, required to select more then 100 posts
+    :param count: number of posts
     :return: list of posts
     """
-    date = datetime.strptime(date, '%Y-%m-%d')
     user_id = str(user_id)
     if user_id.isdigit():
         response = requests.get(f'https://api.vk.com/method/wall.get?owner_id='
-                                f'{user_id}&access_token={token}&v={api_v}')
+                                f'{user_id}&offset={offset}&'
+                                f'access_token={token}&v={api_v}')
     else:
         response = requests.get(f'https://api.vk.com/method/wall.get?domain='
-                                f'{user_id}&access_token={token}&v={api_v}')
+                                f'{user_id}&offset={offset}&'
+                                f'access_token={token}&v={api_v}')
+
     data = response.json()
-    selected_posts = []
+    return data
+
+
+def get_wall(user_id, date, selected_posts=None, offset=0):
+    if selected_posts is None:
+        selected_posts = []
+    date_f = datetime.strptime(date, '%Y-%m-%d')
+    data = get_data(user_id, offset)
     for elem in range(len(data['response']['items'])):
         for key in data['response']['items'][elem]:
             if key == 'date':
                 post_date = datetime.fromtimestamp(
                     data['response']['items'][elem]['date'])
-                if post_date >= date:
+                if post_date >= date_f:
                     selected_posts.append(data['response']['items'][elem])
                 else:
                     break
-    return selected_posts
+    if offset > len(selected_posts):
+        return selected_posts
+    offset += 100
+    time.sleep(0.3)
+    return get_wall(user_id, date, selected_posts, offset)
 
 
-def attach_parse(nesting):
-    """
-    Collects attachments to the post
-    :param nesting: post (if attachments from user page)
-    or post['copy_history'][0] (if attachments from reposted post)
-    :return: list of attachments
-    """
-    attach = []
-    for attachment in nesting['attachments']:
-        if attachment['type'] == 'photo':
-            attach.append(attachment['photo']['photo_604'])
-        elif attachment['type'] == 'album':
-            owner_id = attachment["album"]["thumb"]["owner_id"]
-            album_id = attachment["album"]["thumb"]["album_id"]
-            attach.append(f'https://vk.com/id{owner_id}?z=album{owner_id}_{album_id}')
-        elif attachment['type'] == 'link':
-            attach.append(attachment['link']['url'])
-        elif attachment['type'] == 'audio':
-            attach.extend([attachment['audio']['id'],
-                           attachment['audio']['artist'],
-                           attachment['audio']['title']])
-        elif attachment['type'] == 'video':
-            owner_id = attachment['video']['owner_id']
-            id_= attachment['video']['id']
-            attach.append(f'https://vk.com/video{owner_id}_{id_}')
-    return attach
-
-
-def ids_parse(posts):
+def ids_parse(posts: list):
     """
     Parses the resulting list of posts on ids
     :param posts: list of posts
@@ -77,7 +64,7 @@ def ids_parse(posts):
     return ids
 
 
-def text_parse(posts):
+def text_parse(posts: list):
     """
     Parses the resulting list of posts on texts
     :param posts: list of posts
@@ -96,7 +83,36 @@ def text_parse(posts):
     return text
 
 
-def attachments_parse(posts):
+def attach_parse(nesting):
+    """
+    Collects attachments to the post
+    :param nesting: post (if attachments from user page)
+    or post['copy_history'][0] (if attachments from reposted post)
+    :return: list of attachments
+    """
+    attach = []
+    for attachment in nesting['attachments']:
+        if attachment['type'] == 'photo':
+            attach.append(attachment['photo']['photo_604'])
+        elif attachment['type'] == 'album':
+            owner_id = attachment["album"]["thumb"]["owner_id"]
+            album_id = attachment["album"]["thumb"]["album_id"]
+            attach.append(f'https://vk.com/id{owner_id}?z=album'
+                          f'{owner_id}_{album_id}')
+        elif attachment['type'] == 'link':
+            attach.append(attachment['link']['url'])
+        elif attachment['type'] == 'audio':
+            attach.extend([attachment['audio']['id'],
+                           attachment['audio']['artist'],
+                           attachment['audio']['title']])
+        elif attachment['type'] == 'video':
+            owner_id = attachment['video']['owner_id']
+            id_= attachment['video']['id']
+            attach.append(f'https://vk.com/video{owner_id}_{id_}')
+    return attach
+
+
+def attachments_parse(posts: list):
     """
     Parses the resulting list of posts on attachments
     :param posts: list of posts
@@ -112,7 +128,7 @@ def attachments_parse(posts):
     return attachments
 
 
-def num_attachments_parse(posts):
+def num_attachments_parse(posts: list):
     """
     Parses the resulting list of posts on the number of attachments
     :param posts: list of posts
@@ -128,7 +144,7 @@ def num_attachments_parse(posts):
     return num_attach
 
 
-def likes_parse(posts):
+def likes_parse(posts: list):
     """
     Parses the resulting list of posts on likes
     :param posts: list of posts
@@ -140,7 +156,7 @@ def likes_parse(posts):
     return likes
 
 
-def reposts_parse(posts):
+def reposts_parse(posts: list):
     """
     Parses the resulting list of posts on reposts
     :param posts: list of posts
@@ -152,7 +168,7 @@ def reposts_parse(posts):
     return reposts
 
 
-def comments_parse(posts):
+def comments_parse(posts: list):
     """
     Parses the resulting list of posts on comments
     :param posts: list of posts
@@ -162,3 +178,5 @@ def comments_parse(posts):
     for post in posts:
         comments.append(post['comments']['count'])
     return comments
+
+
