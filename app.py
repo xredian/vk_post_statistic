@@ -5,6 +5,7 @@ from gevent.pywsgi import WSGIServer
 import graphics as gr
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import parser_vk as vk
 import random
 import seaborn as sns
@@ -102,7 +103,8 @@ def download_csv():
 
 @app.route('/graphic', methods=['post', 'get'])
 def graphic():
-    message = ''
+    msg = ''
+    global plot
     plot = ''
     if request.method == 'POST':
         global period, value
@@ -113,23 +115,20 @@ def graphic():
         else:
             data = gr.stat(period, value, posts)
         if type(data) == str:
-            message = data
-            return render_template('graphic.html', message=message)
+            msg = data
+            return render_template('graphic.html', msg=msg)
         else:
             plot = plotting(data)
             if plot is None:
-                message = 'There is no data for specified period'
-                return render_template('graphic.html', message=message)
+                msg = 'There is no data for specified period'
+                return render_template('graphic.html', msg=msg)
             else:
-                message = 'Statistics:'
-                if request.form.get('Download') == 'Download':
-                    return redirect(url_for('download_png'))
-    return render_template('graphic.html', message=message, plot=plot)
+                msg = 'Statistics:'
+                return render_template('graphic.html', msg=msg, plot=plot)
+    return render_template('graphic.html', msg=msg, plot=plot)
 
 
 def plotting(values):
-    global rn
-    rn = round(random.random(), 2) * 100
     y = np.array(list(values.values()))
     x = np.array(list(values.keys()))
     if np.all(y == 0):
@@ -138,16 +137,9 @@ def plotting(values):
     plt.title(f'Number of {value} by {period}')
     plt.ylabel(f'number of {value}')
     plt.xlabel(period)
-    directory = f'{rn}_{user_id}_{value}_{period}.png'
-    plt.savefig(f'static/{directory}')
-    return directory
-
-
-@app.route('/download_png', methods=['post', 'get'])
-def download_png():
-    return send_file(f'static/{rn}_{user_id}_{value}_{period}.png',
-                     mimetype='png',
-                     as_attachment=True)
+    file_name = f'{user_id}_{value}_{period}.png'
+    plt.savefig(f'static/{file_name}')
+    return file_name
 
 
 if __name__ == "__main__":
