@@ -53,7 +53,7 @@ If *Graphic button* has been pressed then the page "Graphic" will be open.
 
 Here you can select the period for which data needed, and the necessary values.
 
-After clicking *submit button* data will be displayed. Also there will be a *Download button* which allows to download the graphic.
+After clicking *submit button* data will be displayed. Also there will be a *Download link* which allows to download the graphic.
 
 ![picture](./pictures/graphic1.png)
 
