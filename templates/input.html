@@ -3,28 +3,35 @@
 <head>
     <meta charset="UTF-8">
 	<title>User ID and date</title>
+	<style>
+	p {
+		font-family: Verdana, sans-serif;
+		margin-left: 40%;
+		margin-right: 40%;
+                     }
+	</style>
 </head>
 <body>
-    <H2>VK statistics APP</H2>
+    <H1 style="font-family: Verdana, sans-serif; text-align: center; background-color: rgb(119,205,216); color: white;">VK statistics APP</H1>
     {% if message %}
-        <H3>{{ message }}</H3>
+        <H4 style="color:red; text-align: center;">{{ message }} </H4>
     {% endif %}
 
     <form action="" method="post">
         <p>
-	        <label for="user_id">User/community id
+	        <label>User/community id
 				<input type="text" name="user_id" maxlength="15">
 			</label>
 		</p>
 		<p>
-	        <label for="date">Date
-	            <input type="date" name="date">
+	        <label>Date
+	            <input type="date" name="date" style="width: 222px">
 			</label>
 		</p>
-		<p>
+		<p style="font-size: 50%">
 		    (starting from which data is taken into account)
 		</p>
-		<p>
+		<p style="text-align: center;">
             <input type="submit" value="Submit">
         </p>
 	</form>

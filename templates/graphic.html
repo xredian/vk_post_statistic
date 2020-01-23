@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
 	<title>Graphic</title>
+    <style>
+	p {
+		font-family: Verdana, sans-serif;
+        margin-left: 45%;
+        margin-right: 40%;
+                     }
+	</style>
 </head>
 <body>
-    <H2>VK statistics APP</H2>
+    <H1 style="font-family: Verdana, sans-serif; text-align: center; background-color: rgb(119,205,216); color: white;">VK statistics APP</H1>
     <form action="" method="post">
         <p>
-            <label for="period">Period
+            <label>Period
                 <select name="period">
                     <option value="year">Year</option>
                     <option value="month">Month</option>
@@ -18,7 +25,7 @@
             </label>
         </p>
         <p>
-            <label for="value">Value
+            <label>Value
                  <select name="value">
                      <option value="likes">Likes</option>
                      <option value="reposts">Reposts</option>
@@ -27,15 +34,14 @@
                 </select>
             </label>
         </p>
-        <p>
+        <p style="margin-left: 48%">
             <input type="submit" value="Submit">
         </p>
 
         {% if msg %}
-        <h3>{{ msg }}</h3>
-        <p><img src="{{ url_for('static', filename=plot) }}" alt="graphic"></p>
-        <p>
-            <p><a href="{{ url_for('static', filename=plot) }}" download>Download</a>
+        <h3 style="font-family: Verdana, sans-serif; text-align: center;">{{ msg }}</h3>
+        <img src="{{ url_for('static', filename=plot) }}" alt="graphic" style="margin-left: 28%">
+            <p><a href="{{ url_for('static', filename=plot) }}" download style="margin-left: 20%">Download</a>
          </p>
         {% endif %}
 
