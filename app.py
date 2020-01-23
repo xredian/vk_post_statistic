@@ -5,7 +5,6 @@ from gevent.pywsgi import WSGIServer
 import graphics as gr
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 import parser_vk as vk
 import random
 import seaborn as sns
@@ -21,11 +20,12 @@ def data_input():
         global user_id, date
         user_id = request.form.get('user_id')
         date = request.form.get('date')
-        try:
-            datetime.strptime(date, '%Y-%m-%d')
-        except ValueError:
-            message = 'Please, input date in YYYY-MM-DD format'
-            return render_template('input.html', message=message)
+        if user_id != '':
+            try:
+                datetime.strptime(date, '%Y-%m-%d')
+            except ValueError:
+                message = 'Please, input date in YYYY-MM-DD format'
+                return render_template('input.html', message=message)
         if user_id != '' and date != '':
             global posts
             posts = vk.get_wall(user_id, date)
