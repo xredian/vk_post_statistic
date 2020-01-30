@@ -40,8 +40,8 @@
 
         {% if msg %}
         <h3 style="font-family: Verdana, sans-serif; text-align: center;">{{ msg }}</h3>
-        <img src="{{ url_for('static', filename=plot) }}" alt="graphic" style="margin-left: 28%">
-            <p><a href="{{ url_for('static', filename=plot) }}" download style="margin-left: 20%">Download</a>
+        <img src="{{ url_for('static', filename = plot) }}" alt="graphic" style="margin-left: 28%">
+            <p><a href="{{ url_for('static', filename = plot) }}" download style="margin-left: 20%">Download</a>
          </p>
         {% endif %}
 
