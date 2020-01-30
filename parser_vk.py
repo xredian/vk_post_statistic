@@ -36,13 +36,12 @@ def get_wall(user_id, date, selected_posts=None, offset=0):
         selected_posts = []
     date_f = datetime.strptime(date, '%Y-%m-%d')
     data = get_data(user_id, offset)
-    for elem in range(len(data['response']['items'])):
-        for key in data['response']['items'][elem]:
+    for elem in data['response']['items']:
+        for key in elem:
             if key == 'date':
-                post_date = datetime.fromtimestamp(
-                    data['response']['items'][elem]['date'])
+                post_date = datetime.fromtimestamp(elem['date'])
                 if post_date >= date_f:
-                    selected_posts.append(data['response']['items'][elem])
+                    selected_posts.append(elem)
                 else:
                     break
     if offset > len(selected_posts):
@@ -144,39 +143,12 @@ def num_attachments_parse(posts: list):
     return num_attach
 
 
-def likes_parse(posts: list):
+def parse(posts: list, item: str):
     """
-    Parses the resulting list of posts on likes
+    Parses the resulting list of posts on likes, reposts or comments
     :param posts: list of posts
+    :param item: likes, reposts or commens
     :return: number of likes
     """
-    likes = []
-    for post in posts:
-        likes.append(post['likes']['count'])
-    return likes
-
-
-def reposts_parse(posts: list):
-    """
-    Parses the resulting list of posts on reposts
-    :param posts: list of posts
-    :return: number of reposts
-    """
-    reposts = []
-    for post in posts:
-        reposts.append(post['reposts']['count'])
-    return reposts
-
-
-def comments_parse(posts: list):
-    """
-    Parses the resulting list of posts on comments
-    :param posts: list of posts
-    :return: number of comments
-    """
-    comments = []
-    for post in posts:
-        comments.append(post['comments']['count'])
-    return comments
-
-
+    items = [post[item]['count'] for post in posts]
+    return items
