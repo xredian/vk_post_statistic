@@ -1,4 +1,4 @@
-import graphics as gr
+import statistics as gr
 import json
 import parser_vk as vk
 import unittest
@@ -12,10 +12,6 @@ class TestParser(unittest.TestCase):
     def setUp(self) -> None:
         self.data = data
         self.post = [self.data['response']['items'][0]]
-
-    def test_get_wall(self):
-        return self.assertEqual(vk.get_wall('epamsystems', '2020-01-16'),
-                                self.post)
 
     def test_ids_parse(self):
         return self.assertEqual(vk.ids_parse(self.post), [1845])
@@ -38,18 +34,18 @@ class TestParser(unittest.TestCase):
         return self.assertEqual(
             vk.num_attachments_parse(self.post), [1])
 
-    def test_likes_parse(self):
-        return self.assertEqual(vk.likes_parse(self.post), [1])
+    def test_parse_likes(self):
+        return self.assertEqual(vk.parse(self.post, 'likes'), [1])
 
-    def test_reposts_ids(self):
-        return self.assertEqual(vk.reposts_parse(self.post), [0])
+    def test_parse_reposts(self):
+        return self.assertEqual(vk.parse(self.post, 'reposts'), [0])
 
-    def test_comments_ids(self):
-        return self.assertEqual(vk.comments_parse(self.post), [0])
+    def test_parse_comments(self):
+        return self.assertEqual(vk.parse(self.post, 'comments'), [0])
 
-    def test_stat(self):
-        return self.assertEqual(gr.stat('year', 'likes', self.post),
-                                {2020: 1.0})
+    def test_average_statistics(self):
+        return self.assertEqual(gr.average_statistics('year', 'likes',
+                                                      self.post), {2020: 1.0})
 
     def test_post_stat(self):
-        return self.assertEqual(gr.post_stat('year', self.post), {2020: 1})
+        return self.assertEqual(gr.post_statistics('year', self.post), {2020: 1})
