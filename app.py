@@ -2,7 +2,7 @@ import csv
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from gevent.pywsgi import WSGIServer
-import graphics as gr
+import statistics as gr
 import matplotlib.pyplot as plt
 import numpy as np
 import parser_vk as vk
@@ -10,7 +10,7 @@ import random
 import seaborn as sns
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
 
 @app.route('/', methods=['post', 'get'])
@@ -22,6 +22,8 @@ def data_input():
         date = request.form.get('date')
         if user_id != '':
             try:
+                # in browsers other than google chrome, the date should be
+                # entered in YYYY-MM-DD format
                 datetime.strptime(date, '%Y-%m-%d')
             except ValueError:
                 message = 'Please, input date in YYYY-MM-DD format'
@@ -47,14 +49,18 @@ def choose():
     return render_template('choose.html')
 
 
-def wt_parse(name, post):
+def what_to_parse(name, post):
     """
-    Selection of parametrs for patsing
+    Selection of parameters for parsing
     :param name: key name
     :param post: list of posts to parse
     :return: calls specific parser
     """
-    if name == 'post_ids':
+    names = ['likes', 'comments', 'reposts']
+    for one in names:
+        if one == name:
+            return vk.parse(post, one)
+    if name == 'id':
         return vk.ids_parse(post)
     elif name == 'text':
         return vk.text_parse(post)
@@ -62,31 +68,25 @@ def wt_parse(name, post):
         return vk.attachments_parse(post)
     elif name == 'num_attachments':
         return vk.num_attachments_parse(post)
-    elif name == 'num_likes':
-        return vk.likes_parse(post)
-    elif name == 'num_reposts':
-        return vk.reposts_parse(post)
-    elif name == 'num_comments':
-        return vk.comments_parse(post)
 
 
 @app.route('/choose_values', methods=['post', 'get'])
 def choose_values():
     global parsed_data
     parsed_data = {}
-    names = ['post_ids', 'text', 'attachments', 'num_attachments', 'num_likes',
-             'num_reposts', 'num_comments']
+    names = ['id', 'text', 'attachments', 'num_attachments', 'likes',
+             'reposts', 'comments']
     for name in names:
         if request.form.get(name):
-            parsed_data.update({name: wt_parse(name, posts)})
+            parsed_data.update({name: what_to_parse(name, posts)})
     if parsed_data:
-        return redirect(url_for('download_csv', parsed_data=parsed_data))
+        return redirect(url_for('download_csv'))
     else:
         message = 'Please choose tha data you need'
         return render_template('choose_values.html', message=message)
 
 
-@app.route('/download_csv', methods=['post', 'get'])
+@app.route('/download_csv', methods=['get'])
 def download_csv():
     rnd = round(random.random() * 100)
     with open(f'{rnd}_{user_id}_statistics.csv', "w",
@@ -97,52 +97,46 @@ def download_csv():
         for elem in range(len(list(parsed_data.values())[0])):
             writer.writerow((parsed_data[key][elem] for key in columns))
     return send_file(f'{rnd}_{user_id}_statistics.csv',
-                     mimetype='txt/csv',
+                     mimetype='text/csv',
                      as_attachment=True)
 
 
 @app.route('/graphic', methods=['post', 'get'])
 def graphic():
     msg = ''
-    global plot
     plot = ''
     if request.method == 'POST':
         global period, value
         period = request.form.get('period')
         value = request.form.get('value')
         if value == 'posts':
-            data = gr.post_stat(period, posts)
+            data = gr.post_statistics(period, posts)
         else:
-            data = gr.stat(period, value, posts)
+            data = gr.average_statistics(period, value, posts)
         if type(data) == str:
             msg = data
             return render_template('graphic.html', msg=msg)
         else:
             plot = plotting(data)
-            if plot is None:
-                msg = 'There is no data for specified period'
-                return render_template('graphic.html', msg=msg)
-            else:
-                msg = 'Statistics:'
-                return render_template('graphic.html', msg=msg, plot=plot)
+            msg = 'Statistics:'
+            return render_template('graphic.html', msg=msg, plot=plot)
     return render_template('graphic.html', msg=msg, plot=plot)
 
 
 def plotting(values):
     y = np.array(list(values.values()))
     x = np.array(list(values.keys()))
-    if np.all(y == 0):
-        return None
     sns.barplot(x, y, palette='bright')
     plt.title(f'Number of {value} by {period}')
     plt.ylabel(f'number of {value}')
     plt.xlabel(period)
-    file_name = f'{user_id}_{value}_{period}.png'
+    file_name = f'{value}_{period}_{user_id}.png'
     plt.savefig(f'static/{file_name}')
+    plt.close('all')
     return file_name
 
 
 if __name__ == "__main__":
-    #app.run(debug=True)
+    # app.run(debug=True)
     http_server = WSGIServer(('', 5000), app)
     http_server.serve_forever()
